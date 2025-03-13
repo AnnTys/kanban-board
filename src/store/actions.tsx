@@ -26,6 +26,16 @@ export const updateColumns = (columns: ColumnsState) => ({
   });
   
   
+  const daysAgo = (date: string) =>{
+      const now = new Date();
+      const diffTime = now.getTime() - new Date( date ).getTime();
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 0) return "Today";
+      if (diffDays === 1) return "Yesterday";
+      return `${diffDays} days ago`;
+  }
+
   export const fetchGitHubIssuesThunk = (owner: string, repo: string) => {
     return async (dispatch: Dispatch) => {
       try {
@@ -51,7 +61,7 @@ export const updateColumns = (columns: ColumnsState) => ({
           for (let i = 0; i < issues.length; i++) {
             const issue = issues[i];
             
-            let item = { id: i.toString( ), title: issue.title, description: issue.description, person: issue.person, comments: issue.comments };
+            let item = { id: i.toString( ), number: issue.number, title: issue.title, description: issue.description, date: daysAgo( issue.updated_at ), person: issue.user.login, comments: issue.comments };
 
             if (issue.state === 'closed') {
               columns.done.push(item);
