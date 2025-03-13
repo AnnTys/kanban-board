@@ -4,10 +4,11 @@ import { Dispatch } from 'redux';
 export const FETCH_ISSUES_REQUEST = 'FETCH_ISSUES_REQUEST';
 export const FETCH_ISSUES_SUCCESS = 'FETCH_ISSUES_SUCCESS';
 export const FETCH_ISSUES_FAILURE = 'FETCH_ISSUES_FAILURE';
+export const SAVE_COOKIE = "SAVE_COOKIE";
 export const UPDATE_COLUMNS = 'UPDATE_COLUMNS';
 export const SET_REPO_INFO = 'SET_REPO_INFO';
 
-export const updateColumns = (columns: ColumnsState) => ({
+  export const updateColumns = (columns: ColumnsState) => ({
     type: UPDATE_COLUMNS,
     payload: columns
   });
@@ -30,8 +31,30 @@ export const updateColumns = (columns: ColumnsState) => ({
     type: SET_REPO_INFO,
     payload: { owner, repo, stars }
   });
+
+  export const saveCookie = (name: string, value: string, days: number = 30)  => ({
+    type: SAVE_COOKIE,
+    payload: { name, value, days }
+  })
   
-  
+  export const saveCookieImpl = (name: string, value: string, days: number = 30) => {
+    return async ( ) => {
+      try {
+      
+        const expirationDate = new Date();
+        expirationDate.setDate(expirationDate.getDate() + days);
+        
+        const cookieValue = value + 
+          `; expires=${expirationDate.toUTCString()}; path=/`;
+        
+        document.cookie = `${name}=${cookieValue}`;
+      }
+      catch (error) {
+        console.error('Error saving Cookie:', error);
+      }
+    };
+  };
+
   const daysAgo = (date: string) =>{
       const now = new Date();
       const diffTime = now.getTime() - new Date( date ).getTime();
@@ -42,7 +65,7 @@ export const updateColumns = (columns: ColumnsState) => ({
       return `${diffDays} days ago`;
   }
 
-  export const fetchGitHubIssuesThunk = (owner: string, repo: string) => {
+  export const fetchGitHubIssuesThunk = (owner: string, repo: string, stars: string) => {
     return async (dispatch: Dispatch) => {
       try {
         dispatch(fetchIssuesRequest());
@@ -79,7 +102,11 @@ export const updateColumns = (columns: ColumnsState) => ({
             }
         }
         
+        dispatch(setRepoInfo(owner, repo, stars));
         dispatch(fetchIssuesSuccess(columns));
+        const cookieColumnsSaver = saveCookieImpl("columns", JSON.stringify(columns), 30);
+        await cookieColumnsSaver();
+        
       } catch (error) {
         dispatch(fetchIssuesFailure(error instanceof Error ? error.message : 'An error occurred'));
       }

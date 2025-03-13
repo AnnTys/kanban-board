@@ -1,13 +1,14 @@
 import { Card, Col, Container, Row } from 'react-bootstrap';
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import Board from './Board';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { updateColumns } from '../store/actions';
+import { useAppDispatch, useColumnsSelector } from '../store/hooks';
+import { updateColumns, saveCookieImpl } from '../store/actions';
 
 
 export default function Main() {
+
   const dispatch = useAppDispatch();
-  const columns = useAppSelector((state) => state.app.columns);
+  const columns = useColumnsSelector((state) => state.columns.columns);
 
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
@@ -27,6 +28,7 @@ export default function Main() {
       };
       
       dispatch(updateColumns(newColumns));
+      dispatch(saveCookieImpl("columns", JSON.stringify(newColumns), 30));
     } else {
   
       const sourceItems = [...columns[sourceColumn]];
@@ -41,6 +43,7 @@ export default function Main() {
       };
       
       dispatch(updateColumns(newColumns));
+      dispatch(saveCookieImpl("columns", JSON.stringify(newColumns), 30));
     }
   };
 

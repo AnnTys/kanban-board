@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Button, Container, Form, InputGroup, Alert } from 'react-bootstrap';
 import { useAppDispatch, useColumnsSelector } from '../store/hooks';
-import { fetchGitHubIssuesThunk, setRepoInfo } from '../store/actions';
-
+import { fetchGitHubIssuesThunk } from '../store/actions';
 export default function SearchForm() {
   const [repoUrl, setRepoUrl] = useState('');
   const dispatch = useAppDispatch();
@@ -18,10 +17,10 @@ const getRepoStars = async (owner: string, repo: string): Promise<string> => {
         }
 
         const data = await response.json();
-        return data.stargazers_count.toString( ); // Returns the number of stars
+        return data.stargazers_count.toString( ); 
     } catch (error) {
         console.error("Error fetching stars:", error);
-        return ""; // Return null in case of an error
+        return ""; 
     }
 };
   
@@ -57,8 +56,7 @@ const getRepoStars = async (owner: string, repo: string): Promise<string> => {
       
      const stars = await getRepoStars(owner, repo);
 
-      dispatch(setRepoInfo(owner, repo, stars));
-      dispatch(fetchGitHubIssuesThunk(owner, repo));
+      dispatch(fetchGitHubIssuesThunk(owner, repo, stars));
       
     } catch (error) {
       console.error('Error parsing repo URL:', error);
