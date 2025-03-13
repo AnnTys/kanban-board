@@ -1,7 +1,7 @@
-import { Item } from '../components/Item';
+import { ItemType } from '../components/Item';
 
 export interface ColumnsState {
-  [key: string]: Item[];
+  [key: string]: ItemType[];
 }
 
 export interface AppState {

@@ -1,6 +1,6 @@
 import { Droppable, Draggable } from "@hello-pangea/dnd";
 import React from "react";
-import Item, { Item as ItemType } from "./Item";
+import Item, { ItemType } from "./Item";
 
 interface BoardProps {
   columnId: string;
