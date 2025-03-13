@@ -1,26 +1,13 @@
 import { Card, Col, Container, Row } from 'react-bootstrap';
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import Board from './Board';
-import { useState } from 'react';
-import { Item } from './Item';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { updateColumns } from '../store/actions';
 
-export interface ColumnsState {
-  [key: string]: Item[];
-}
 
 export default function Main() {
-  const initialColumns: ColumnsState = {
-    todo: [
-      { id: "1", title: "Fix Bug", description: "Issue in login", person: "John", comments: 2 },
-      { id: "2", title: "Add Feature", description: "Dark mode", person: "Jane", comments: 5 },
-    ],
-    inProgress: [
-      { id: "3", title: "Fix Buaag", description: "Issue in login", person: "John", comments: 2 }
-    ],
-    done: [],
-  };
-
-  const [columns, setColumns] = useState<ColumnsState>(initialColumns);
+  const dispatch = useAppDispatch();
+  const columns = useAppSelector((state) => state.app.columns);
 
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
@@ -29,27 +16,31 @@ export default function Main() {
     const destinationColumn = result.destination.droppableId;
 
     if (sourceColumn === destinationColumn) {
-      // Reordering within the same column
+    
       const newItems = [...columns[sourceColumn]];
       const [movedItem] = newItems.splice(result.source.index, 1);
       newItems.splice(result.destination.index, 0, movedItem);
 
-      setColumns((prev) => ({
-        ...prev,
+      const newColumns = {
+        ...columns,
         [sourceColumn]: newItems,
-      }));
+      };
+      
+      dispatch(updateColumns(newColumns));
     } else {
-      // Moving between columns
+  
       const sourceItems = [...columns[sourceColumn]];
       const destinationItems = [...columns[destinationColumn]];
       const [movedItem] = sourceItems.splice(result.source.index, 1);
       destinationItems.splice(result.destination.index, 0, movedItem);
 
-      setColumns((prev) => ({
-        ...prev,
+      const newColumns = {
+        ...columns,
         [sourceColumn]: sourceItems,
         [destinationColumn]: destinationItems,
-      }));
+      };
+      
+      dispatch(updateColumns(newColumns));
     }
   };
 
