@@ -48,9 +48,10 @@ export default function Main() {
   };
 
   return (
+    
     <DragDropContext onDragEnd={handleDragEnd}>
-      <Container>
-        <Row className="gy-3">
+      <Container className='mainBoard'>
+        <Row className="gy-3 title">
           <Col xs={12} md={4}>
             <Card>
               <Card.Title className="p-3">To Do</Card.Title>

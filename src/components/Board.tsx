@@ -9,7 +9,7 @@ interface BoardProps {
 
 const Board: React.FC<BoardProps> = ({ columnId, items }) => {
   return (
-    <Droppable droppableId={columnId}>
+    <Droppable droppableId={columnId} >
       {(provided) => (
         <div 
           ref={provided.innerRef} 
