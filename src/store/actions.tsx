@@ -5,6 +5,7 @@ export const FETCH_ISSUES_REQUEST = 'FETCH_ISSUES_REQUEST';
 export const FETCH_ISSUES_SUCCESS = 'FETCH_ISSUES_SUCCESS';
 export const FETCH_ISSUES_FAILURE = 'FETCH_ISSUES_FAILURE';
 export const UPDATE_COLUMNS = 'UPDATE_COLUMNS';
+export const SET_REPO_INFO = 'SET_REPO_INFO';
 
 export const updateColumns = (columns: ColumnsState) => ({
     type: UPDATE_COLUMNS,
@@ -24,6 +25,11 @@ export const updateColumns = (columns: ColumnsState) => ({
     type: FETCH_ISSUES_FAILURE,
     payload: error
   });
+
+  export const setRepoInfo = (owner: string, repo: string, stars: string) => ({
+    type: SET_REPO_INFO,
+    payload: { owner, repo, stars }
+  });
   
   
   const daysAgo = (date: string) =>{
@@ -40,8 +46,7 @@ export const updateColumns = (columns: ColumnsState) => ({
     return async (dispatch: Dispatch) => {
       try {
         dispatch(fetchIssuesRequest());
-        
-        
+
         const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/issues?state=all`);
         
         if (!response.ok) {

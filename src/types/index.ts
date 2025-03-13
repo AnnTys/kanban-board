@@ -9,3 +9,9 @@ export interface AppState {
   isLoading: boolean;
   error: string | null;
 }
+
+export interface UrlState{
+  owner: String;
+  repo: String
+  stars: String
+}

@@ -1,14 +1,30 @@
 import { useState } from 'react';
 import { Button, Container, Form, InputGroup, Alert } from 'react-bootstrap';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { fetchGitHubIssuesThunk } from '../store/actions';
+import { useAppDispatch, useColumnsSelector } from '../store/hooks';
+import { fetchGitHubIssuesThunk, setRepoInfo } from '../store/actions';
 
 export default function SearchForm() {
   const [repoUrl, setRepoUrl] = useState('');
   const dispatch = useAppDispatch();
-  const isLoading = useAppSelector((state) => state.app.isLoading);
-  const error = useAppSelector((state) => state.app.error);
+  const isLoading = useColumnsSelector((state) => state.columns.isLoading);
+  const error = useColumnsSelector((state) => state.columns.error);
 
+const getRepoStars = async (owner: string, repo: string): Promise<string> => {
+    try {
+        const response = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch repository data: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        return data.stargazers_count.toString( ); // Returns the number of stars
+    } catch (error) {
+        console.error("Error fetching stars:", error);
+        return ""; // Return null in case of an error
+    }
+};
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -39,7 +55,9 @@ export default function SearchForm() {
         throw new Error('Invalid repository format. Please use owner/repo or github.com/owner/repo');
       }
       
-     
+     const stars = await getRepoStars(owner, repo);
+
+      dispatch(setRepoInfo(owner, repo, stars));
       dispatch(fetchGitHubIssuesThunk(owner, repo));
       
     } catch (error) {
